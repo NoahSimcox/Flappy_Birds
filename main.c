@@ -7,7 +7,7 @@ bool step();
 void draw();
 
 void main() {
-    begin(); // No rendering allowed!
+    begin(); // No rendering allowed
     gfx_Begin();
     gfx_SetDrawBuffer(); // Draw to the buffer to avoid rendering artifacts
 

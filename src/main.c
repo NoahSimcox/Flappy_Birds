@@ -10,7 +10,6 @@ int X = GFX_LCD_WIDTH / 4;
 float velY;
 
 void main() {
-    begin(); // No rendering allowed
     gfx_Begin();
     gfx_SetDrawBuffer(); // Draw to the buffer to avoid rendering artifacts
 

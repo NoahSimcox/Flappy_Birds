@@ -9,6 +9,8 @@ extern "C" {
 #define sprites_palette_offset 0
 #include "FlappyBird.h"
 #include "grass.h"
+#include "topPipe.h"
+#include "bottomPipe.h"
 
 #ifdef __cplusplus
 }

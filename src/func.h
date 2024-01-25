@@ -2,14 +2,24 @@
 #include <ti/getcsc.h>
 #include <stdlib.h>
 
-#define GRAVITY -0.2f
-#define STEP_VEL 3.0f
+
+typedef struct{
+    float x;
+    float y;
+} Pipe;
+
+#define GRAVITY -0.4f
+#define STEP_VEL 3.8f
 #define BIRD_X 80
 #define GRASS_Y 204
 #define SAND_X 0
 #define SAND_Y 208
 #define SAND_WIDTH 320
 #define SAND_HEIGHT 32
+#define PIPE_BUFFER 216
+#define PIPE_GAP 48
 
 bool step();
 void draw();
+void init_Pipes();
+void set_Pipes();

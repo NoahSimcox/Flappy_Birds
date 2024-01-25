@@ -13,6 +13,8 @@ converts:
     images:
       - FlappyBird.png
       - grass.png
+      - topPipe.png
+      - bottomPipe.png
 
 outputs:
   - type: c

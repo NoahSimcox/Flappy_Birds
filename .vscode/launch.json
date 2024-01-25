@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/CEdev/Projects/Flappy_Birds",
-      "program": "c:/CEdev/Projects/Flappy_Birds/build/Debug/outDebug",
+      "cwd": "c:/CEdev/Projects/Flappy_Birds/src",
+      "program": "c:/CEdev/Projects/Flappy_Birds/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -13,6 +13,10 @@ float velY;
 bool clipped = false;
 Pipe pipes[10] = {{-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}};
 int pipeOverwrite = 0;
+Position bird_TopLeft;
+Position bird_TopRight;
+Position bird_BottomLeft;
+Position bird_BottomRight;
 
 int main() {
 
@@ -66,6 +70,14 @@ bool step(){
         pipeOverwrite = 0;
 
     for (int i = 0; i < 10; i++){
+        bird_TopLeft.x = BIRD_X;
+        bird_TopLeft.y = bird_Y;
+        bird_TopRight.x = BIRD_X + FlappyBird_width;
+        bird_TopRight.y = bird_Y;
+        bird_BottomLeft.x = BIRD_X;
+        bird_BottomLeft.y = bird_Y + FlappyBird_height;
+        bird_BottomRight.x = BIRD_X + FlappyBird_width;
+        bird_BottomRight.y = bird_Y + FlappyBird_height;
         // if ()
         pipes[i].x -= 2;
     }

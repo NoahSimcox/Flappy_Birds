@@ -8,6 +8,11 @@ typedef struct{
     float y;
 } Pipe;
 
+typedef struct{
+    int x;
+    int y;
+} Position;
+
 #define GRAVITY -0.4f
 #define STEP_VEL 3.8f
 #define BIRD_X 80

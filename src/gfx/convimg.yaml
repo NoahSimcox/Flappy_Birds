@@ -4,6 +4,7 @@ palettes:
       - color: {index: 0, r: 255, g: 0, b: 255}
       - color: {index: 1, r: 53, g: 81, b: 92}
       - color: {index: 2, r: 210, g: 199, b: 134}
+      - color: {index: 3, r: 0, g: 0, b: 0}
     images: automatic
 
 converts:
@@ -13,8 +14,8 @@ converts:
     images:
       - FlappyBird.png
       - grass.png
-      - topPipe.png
-      - bottomPipe.png
+      - pipeRim.png
+      - pipeSect.png
 
 outputs:
   - type: c

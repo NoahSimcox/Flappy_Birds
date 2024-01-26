@@ -6,30 +6,34 @@
 #include "func.h"
 #include "gfx/gfx.h"
 #include <stdbool.h>
-#include <time.h>
+#include <sys\util.h>
+#include <sys\rtc.h>
+#include <string.h>
 
 int bird_Y = GFX_LCD_HEIGHT / 2;
 float velY;
-bool clipped = false;
-Pipe pipes[10] = {{-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}};
+Position pipeRims[4] = {{-50, 0}, {-50, 0}, {-50, 0}, {-50, 0}};
 int pipeOverwrite = 0;
+int checkPipe = 0;
+int bottomPipeSects;
+int topPipeSects;
+int sect_X;
+int score;
 
 int main() {
 
     gfx_Begin();
     gfx_SetDrawBuffer(); // Draw to the buffer to avoid rendering artifacts
     gfx_SetPalette(global_palette, sizeof_global_palette, 0);
-    gfx_SetTransparentColor(0);
-
+    srand(rtc_Time());
     init_Pipes();
 
     while (step()) { // No rendering allowed in step!
-        if (clipped)
-            break;
         draw(); // as little non-render logic as possible
         gfx_SwapDraw(); // Queue the buffered frame to be displayed
     }
 
+    fail_Screen();
     gfx_End();
     return 0;
 }
@@ -37,9 +41,13 @@ int main() {
 
 bool step(){
 
-
+    // collision logic
     if (bird_Y <= 0 || bird_Y >= GRASS_Y)
-        clipped = true;
+        return false;
+    
+    if (gfx_CheckRectangleHotspot(BIRD_X, bird_Y, FlappyBird_width, FlappyBird_height, pipeRims[checkPipe].x, 0, Pipe_width, pipeRims[checkPipe].y - PIPE_GAP) || gfx_CheckRectangleHotspot(BIRD_X, bird_Y, FlappyBird_width, FlappyBird_height, pipeRims[checkPipe].x, pipeRims[checkPipe].y, Pipe_width, Pipe_height))
+        return false;
+
 
     kb_Scan();
     static bool enter, prevEnter;
@@ -57,17 +65,23 @@ bool step(){
 
 
     // pipe logic
-    if (pipes[pipeOverwrite].x <= PIPE_BUFFER){
-        pipeOverwrite += 2;
+    if (pipeOverwrite >= 4){
+        pipeOverwrite = 0;
+        set_Pipes();
+    } else if (pipeRims[pipeOverwrite].x <= PIPE_BUFFER){
+        pipeOverwrite++;
         set_Pipes();
     }
-    
-    if (pipeOverwrite >= 10)
-        pipeOverwrite = 0;
 
-    for (int i = 0; i < 10; i++){
-        // if ()
-        pipes[i].x -= 2;
+    if (pipeRims[checkPipe].x < BIRD_X){
+        checkPipe++;
+        score++;
+    }
+    if (checkPipe >= 4)
+        checkPipe = 0;
+
+    for (int i = 0; i < 4; i++){
+        pipeRims[i].x -= 2;
     }
 
     return true;
@@ -77,9 +91,21 @@ bool step(){
 void draw(){
 
     gfx_FillScreen(1); // blue sky
-    for (int i = 0; i < 10; i += 2){
-        gfx_TransparentSprite(bottomPipe, pipes[i].x, pipes[i].y);
-        gfx_TransparentSprite(topPipe, pipes[i + 1].x, pipes[i + 1].y);
+    
+    for (int i = 0; i < 4; i++){
+        int topPipeY = (pipeRims[i].y  - PIPE_GAP) - pipeRim_height;
+        gfx_Sprite(pipeRim, pipeRims[i].x, pipeRims[i].y);
+        gfx_Sprite(pipeRim, pipeRims[i].x, topPipeY);
+
+        bottomPipeSects = (GFX_LCD_HEIGHT - (grass_height + SAND_HEIGHT)) - (pipeRims[i].y + pipeRim_height);
+        topPipeSects = (GFX_LCD_HEIGHT - topPipeY);
+
+        for (int j = 0; j < bottomPipeSects; j += pipeSect_height){
+            gfx_Sprite(pipeSect, pipeRims[i].x + 1, pipeRims[i].y + j + pipeRim_height);
+        }
+        for (int j = 0; j < topPipeSects; j += pipeSect_height){
+            gfx_Sprite(pipeSect, pipeRims[i].x + 1, (topPipeY - j) - pipeSect_height);
+        }
     }
     gfx_SetColor(2);
     gfx_FillRectangle_NoClip(SAND_X, SAND_Y, SAND_WIDTH, SAND_HEIGHT);
@@ -92,23 +118,30 @@ void draw(){
 
 void init_Pipes(){
 
-    time_t t;
-    srand((unsigned) time(&t));
-
-    pipes[pipeOverwrite].y = (rand() % 117) + 68;
-    pipes[pipeOverwrite + 1].y = (pipes[pipeOverwrite].y - PIPE_GAP) - topPipe_height;
-    pipes[pipeOverwrite].x = PIPE_BUFFER + 100;
-    pipes[pipeOverwrite + 1].x = PIPE_BUFFER + 100;
+    pipeRims[pipeOverwrite].y = randInt(68, 184);
+    pipeRims[pipeOverwrite].x = PIPE_BUFFER + 100;
 }
 
 
 void set_Pipes(){
 
-    time_t t;
-    srand((unsigned) time(&t));
+    pipeRims[pipeOverwrite].y = randInt(68, 184);
+    pipeRims[pipeOverwrite].x = GFX_LCD_WIDTH;
+}
 
-    pipes[pipeOverwrite].y = (rand() % 117) + 68;
-    pipes[pipeOverwrite + 1].y = (pipes[pipeOverwrite].y - PIPE_GAP) - topPipe_height;
-    pipes[pipeOverwrite].x = GFX_LCD_WIDTH;
-    pipes[pipeOverwrite + 1].x = GFX_LCD_WIDTH;
+void fail_Screen(){
+
+    char str[10] = "Score: ";
+
+    kb_Scan();
+    while(!(kb_Data[6] & kb_Clear)){
+        gfx_FillScreen(1);
+        gfx_SetTextXY((GFX_LCD_WIDTH / 2) - 50, (GFX_LCD_HEIGHT / 2) - 5);
+        gfx_SetTextScale(2, 2);
+        gfx_SetTextFGColor(3);
+        gfx_PrintString(str);
+        gfx_PrintUInt(score, 1);
+        gfx_SwapDraw();
+        kb_Scan();
+    }
 }

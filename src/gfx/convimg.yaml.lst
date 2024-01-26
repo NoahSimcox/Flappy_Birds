@@ -4,8 +4,8 @@ FlappyBird.h
 FlappyBird.c
 grass.h
 grass.c
-topPipe.h
-topPipe.c
-bottomPipe.h
-bottomPipe.c
+pipeRim.h
+pipeRim.c
+pipeSect.h
+pipeSect.c
 gfx.h

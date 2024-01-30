@@ -1,0 +1,99 @@
+Section          Base   Top    High   Length
+---------------- ------ ------ ------ -------
+.icon            D1A882 D1A89E            1Ch
+.init.libs       D1A89E D1A8F6            58h
+.libs            D1A8F6 D1A957            61h
+.init.clock      D1A957 D1A957             0h
+.init.reruncheck D1A957 D1A957             0h
+.init            D1A957 D1A981            2Ah
+.fini            D1A981 D1A9B5            34h
+.text            D1A9B5 D1B104           74Fh
+.data            D1B104 D1B51F           41Bh
+.rodata          D1B51F D1B54B            2Ch
+.init_array      000000 000000             0h
+.ctors           000000 000000             0h
+.dtors           000000 000000             0h
+.fini_array      000000 000000             0h
+.bss             D052C6 D052DA D13FD8     14h
+.header          D1A87F D1A882             3h
+
+Label                            Value
+------------------------------   ------
+___low_bss                     = D052C6
+___len_bss                     = 000014
+___heaptop                     = D13FD8
+___heapbot                     = D052DA
+___libs                        = D1A8F6
+___init_array_count            = 000000
+___ctors_count                 = 000000
+___dtors_count                 = 000000
+___fini_array_count            = 000000
+__stack                        = D1A87E
+__frameset                     = D1A9B5
+__idvrmu                       = D1A9C3
+__iremu                        = D1A9DB
+__ishl                         = D1A9E2
+__fadd                         = 000270
+__fcmp                         = 000274
+__fsub                         = 000290
+__ftol                         = 00027C
+__ftoul                        = 00027C
+__ltof                         = 000284
+__setflag                      = 000218
+__ultof                        = 000280
+_os_DisableHomeTextBuffer      = D1AA08
+_os_EnableHomeTextBuffer       = D1AA1A
+_random                        = D1AA2C
+__setstate                     = D1AA8A
+__state                        = D1B104
+_srand                         = D1AA9A
+.missingappvar                 = D1B51F
+.libloadname                   = D1B524
+.libloadnamelen                = 000007
+.webaddress                    = D1B52C
+__start                        = D1A957
+___exithl                      = D1A981
+skip._exit                     = D1A981
+skip.__Exit                    = D1A981
+skip._abort                    = D1A981
+_exit.sp                       = D1A982
+_exit.flash_wait_states        = D1A98C
+_main                          = D1AAA2
+_init_Pipes                    = D1AAF5
+_step                          = D1AB34
+_draw                          = D1ADF9
+_fail_Screen                   = D1B045
+_set_Pipes                     = D1B0C5
+_bird_Y                        = D1B114
+_pipeRims                      = D1B117
+_pipeOverwrite                 = D052C6
+_checkPipe                     = D052C9
+_global_palette                = D1B137
+_step.prevEnter                = D052CC
+_velY                          = D052CD
+_score                         = D052D1
+_pipeRim_data                  = D1B153
+_bottomPipeSects               = D052D4
+_topPipeSects                  = D052D7
+_pipeSect_data                 = D1B259
+_grass_data                    = D1B43B
+_FlappyBird_data               = D1B45D
+___const.fail_Screen.str       = D1B541
+lib.LibLoad                    = D1A8F6
+_#gfx_Begin                    = D1A909
+_#gfx_End                      = D1A90D
+_#gfx_SetColor                 = D1A911
+_#gfx_SetPalette               = D1A915
+_#gfx_FillScreen               = D1A919
+_#gfx_SetDraw                  = D1A91D
+_#gfx_SwapDraw                 = D1A921
+_#gfx_PrintUInt                = D1A925
+_#gfx_PrintString              = D1A929
+_#gfx_SetTextXY                = D1A92D
+_#gfx_SetTextFGColor           = D1A931
+_#gfx_FillRectangle_NoClip     = D1A935
+_#gfx_Sprite                   = D1A939
+_#gfx_Sprite_NoClip            = D1A93D
+_#gfx_TransparentSprite_NoClip = D1A941
+_#gfx_SetTextScale             = D1A945
+_#kb_Scan                      = D1A953

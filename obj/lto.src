@@ -19,24 +19,21 @@ _main:
 	pop	hl
 	pop	hl
 	pop	hl
-	or	a, a
-	sbc	hl, hl
+	ld	hl, (-851900)
+	ld	a, (-851897)
 	push	hl
-	call	_gfx_SetTransparentColor
+	call	_srand
 	pop	hl
 	call	_init_Pipes
 BB0_1:
 	call	_step
-	ld	l, a
-	ld	a, (_clipped)
-	bit	0, l
-	jr	z, BB0_4
-	or	a, a
-	jr	nz, BB0_4
+	bit	0, a
+	jr	z, BB0_3
 	call	_draw
 	call	_gfx_SwapDraw
 	jr	BB0_1
-BB0_4:
+BB0_3:
+	call	_fail_Screen
 	call	_gfx_End
 	or	a, a
 	sbc	hl, hl
@@ -46,103 +43,158 @@ BB0_4:
 	section	.text,"ax",@progbits
 	public	_init_Pipes
 _init_Pipes:
-	ld	hl, -10
-	call	__frameset
-	pea	ix - 4
-	call	_time
-	pop	de
-	push	hl
-	call	_srand
-	pop	hl
-	call	_rand
+	call	_random
 	ld	bc, 117
-	call	__irems
+	call	__iremu
 	ld	de, 68
 	add	hl, de
+	xor	a, a
 	push	hl
 	pop	bc
-	push	bc
-	pop	iy
-	add	iy, iy
-	sbc	hl, hl
-	ld	a, l
-	call	__ltof
+	call	__ultof
 	push	bc
 	pop	de
 	ld	hl, (_pipeOverwrite)
-	ld	(ix - 10), hl
 	ld	c, 3
 	call	__ishl
 	push	hl
 	pop	bc
-	ld	hl, _pipes
-	push	hl
-	pop	iy
-	add	iy, bc
-	ld	(ix - 7), iy
-	ld	(iy + 4), de
-	ld	(iy + 7), a
-	push	de
-	pop	bc
-	ld	hl, 4194304
-	ld	e, -62
-	call	__fadd
-	ld	hl, 3932160
-	inc	e
-	call	__fadd
-	push	bc
-	pop	de
-	ld	hl, (ix - 10)
-	inc	hl
-	ld	c, 3
-	call	__ishl
-	push	hl
-	pop	bc
-	ld	iy, _pipes
+	ld	iy, _pipeRims
 	add	iy, bc
 	ld	(iy + 4), de
 	ld	(iy + 7), a
-	lea	bc, iy
 	ld	hl, -6422528
-	ex	de, hl
-	ld	hl, (ix - 7)
-	ld	(hl), de
-	ld	iy, (ix - 7)
+	ld	(iy), hl
 	ld	(iy + 3), 67
-	push	bc
-	pop	iy
-	ld	(iy), de
-	ld	(iy + 3), 67
-	ld	sp, ix
-	pop	ix
 	ret
 	section	.text,"ax",@progbits
 
 	section	.text,"ax",@progbits
 	public	_step
 _step:
-	ld	hl, -6
+	ld	hl, -20
 	call	__frameset
 	ld	de, -204
-	ld	hl, (_bird_Y)
+	xor	a, a
+	ld	bc, (_bird_Y)
+	push	bc
+	pop	hl
 	add	hl, de
 	inc	de
 	or	a, a
 	sbc	hl, de
-	jr	nc, BB2_2
-	ld	a, 1
-	ld	(_clipped), a
-BB2_2:
+	jp	c, BB2_27
+	ld	(ix - 9), bc
+	ld	iy, _pipeRims
+	ld	hl, (_checkPipe)
+	ld	c, 3
+	ld	(ix - 12), hl
+	call	__ishl
+	push	hl
+	pop	de
+	add	iy, de
+	ld	bc, (iy)
+	ld	d, (iy + 3)
+	push	bc
+	pop	iy
+	ld	a, d
+	ld	hl, -3145728
+	ld	e, 65
+	call	__fadd
+	ld	(ix - 6), bc
+	ld	(ix - 3), a
+	lea	hl, iy
+	ld	e, d
+	ld	bc, -4194304
+	ld	a, 66
+	call	__fcmp
+	jp	p, BB2_7
+	ld	hl, -6291456
+	ld	e, 66
+	ld	bc, (ix - 6)
+	ld	a, (ix - 3)
+	call	__fcmp
+	jp	p, BB2_7
+	ld	e, -62
+	ld	c, 3
+	ld	hl, (ix - 12)
+	call	__ishl
+	push	hl
+	pop	bc
+	ld	iy, _pipeRims
+	add	iy, bc
+	ld	bc, (iy + 4)
+	ld	a, (iy + 7)
+	ld	(ix - 6), bc
+	ld	(ix - 12), a
+	ld	hl, 4194304
+	call	__fadd
+	or	a, a
+	sbc	hl, hl
+	ld	e, h
+	call	__fadd
+	ld	(ix - 3), bc
+	ld	d, a
+	ld	hl, (ix - 9)
+	push	hl
+	pop	iy
+	add	iy, iy
+	push	hl
+	pop	iy
+	sbc	hl, hl
+	lea	bc, iy
+	ld	a, l
+	call	__ltof
+	push	bc
+	pop	hl
+	ld	e, a
+	ld	bc, (ix - 3)
+	ld	a, d
+	call	__fcmp
+	jp	m, BB2_6
+	ld	(ix - 16), e
+	ld	(ix - 15), hl
+	ld	de, 12
+	add	iy, de
+	lea	hl, iy
+	lea	bc, iy
+	add	iy, iy
+	sbc	hl, hl
+	ld	a, l
+	call	__ltof
+	ld	(ix - 3), bc
+	ld	(ix - 9), a
+	ld	iy, (ix - 6)
+	lea	bc, iy
+	ld	d, (ix - 12)
+	ld	a, d
+	ld	hl, 3932160
+	ld	e, 67
+	call	__fadd
+	ld	(ix - 19), bc
+	ld	(ix - 20), a
+	lea	hl, iy
+	ld	e, d
+	ld	bc, (ix - 3)
+	ld	a, (ix - 9)
+	call	__fcmp
+	jp	p, BB2_7
+	ld	hl, (ix - 15)
+	ld	e, (ix - 16)
+	ld	bc, (ix - 19)
+	ld	a, (ix - 20)
+	call	__fcmp
+	jp	p, BB2_7
+BB2_6:
+	xor	a, a
+	jp	BB2_27
+BB2_7:
 	call	_kb_Scan
 	ld	hl, -720868
-	push	de
-	ld	e, (hl)
+	ld	c, (hl)
 	inc	hl
-	ld	d, (hl)
+	ld	b, (hl)
 	dec	hl
-	ld	iyl, e
-	ld	iyh, d
-	pop	de
 	push	de
 	ld	e, (hl)
 	inc	hl
@@ -150,51 +202,47 @@ BB2_2:
 	ld	l, e
 	ld	h, d
 	pop	de
-	ld.sis	bc, 64
-	call	__sand
 	ld	a, l
-	or	a, a
-	jp	nz, BB2_18
-	ld	(ix - 3), hl
-	ld	hl, _velY
+	bit	6, a
+	ld	a, 0
+	jp	nz, BB2_27
+	ld	iy, _velY
+	ld	hl, -3355443
 	ld	e, -66
-	ld	a, iyl
+	ld	a, c
 	and	a, 1
 	ld	d, a
 	ld	a, (_step.prevEnter)
 	or	a, a
-	jr	z, BB2_5
+	jr	z, BB2_10
 	ld	c, 0
-	jr	BB2_6
-BB2_5:
+	jr	BB2_11
+BB2_10:
 	ld	c, -1
-BB2_6:
-	ld	(ix - 6), d
+BB2_11:
+	ld	(ix - 3), d
 	ld	a, d
 	and	a, c
 	ld	d, a
 	ld	bc, (_velY)
-	push	hl
-	pop	iy
 	lea	iy, iy + 3
 	ld	a, (iy)
-	ld	hl, -3355443
 	call	__fadd
 	ld	e, a
 	bit	0, d
-	jr	z, BB2_8
+	jr	z, BB2_13
 	ld	bc, 5872025
-BB2_8:
+BB2_13:
 	bit	0, d
-	jr	z, BB2_10
+	jr	z, BB2_15
 	ld	e, 64
-BB2_10:
-	ld	a, (ix - 6)
+BB2_15:
+	ld	a, (ix - 3)
 	ld	(_step.prevEnter), a
 	ld	(_velY), bc
 	ld	a, e
 	ld	(_velY+3), a
-	ld	(ix - 6), bc
+	ld	(ix - 3), bc
 	ld	bc, (_bird_Y)
 	push	bc
 	pop	hl
@@ -204,80 +252,106 @@ BB2_10:
 	sbc	hl, hl
 	ld	a, l
 	call	__ltof
-	ld	hl, (ix - 6)
+	ld	hl, (ix - 3)
 	call	__fsub
 	call	__ftol
 	ld	(_bird_Y), bc
-	ld	hl, (_pipeOverwrite)
+	ld	de, (_pipeOverwrite)
+	ld	bc, 4
+	push	de
+	pop	hl
+	or	a, a
+	sbc	hl, bc
+	call	pe, __setflag
+	ld	hl, 0
+	jp	p, BB2_18
 	ld	c, 3
-	ld	(ix - 6), hl
+	ld	(ix - 3), de
+	ex	de, hl
 	call	__ishl
 	push	hl
-	pop	de
-	ld	iy, _pipes
-	add	iy, de
+	pop	bc
+	ld	iy, _pipeRims
+	add	iy, bc
 	ld	bc, (iy)
 	ld	hl, 5767168
 	ld	e, 67
 	ld	a, (iy + 3)
 	call	__fcmp
-	jp	p, BB2_12
-	ld	hl, (ix - 6)
-	jr	BB2_13
-BB2_12:
-	ld	de, 2
-	ld	hl, (ix - 6)
-	add	hl, de
+	jp	m, BB2_19
+	ld	hl, (ix - 3)
+	inc	hl
+BB2_18:
 	ld	(_pipeOverwrite), hl
 	call	_set_Pipes
-	ld	hl, (_pipeOverwrite)
-BB2_13:
-	ld	de, 10
+BB2_19:
+	ld	hl, (_checkPipe)
+	ld	c, 3
+	ld	(ix - 3), hl
+	call	__ishl
+	push	hl
+	pop	de
+	ld	iy, _pipeRims
+	add	iy, de
+	ld	hl, (iy)
+	ld	e, (iy + 3)
+	ld	bc, -6291456
+	ld	a, 66
+	call	__fcmp
+	jp	p, BB2_21
+	ld	iy, (ix - 3)
+	inc	iy
+	ld	(_checkPipe), iy
+	ld	hl, (_score)
+	inc	hl
+	ld	(_score), hl
+	ld	bc, 0
+	ld	de, 4
+	lea	hl, iy
+	jr	BB2_22
+BB2_21:
+	ld	bc, 0
+	ld	de, 4
+	ld	hl, (ix - 3)
+BB2_22:
 	or	a, a
 	sbc	hl, de
 	call	pe, __setflag
-	jp	m, BB2_15
-	or	a, a
-	sbc	hl, hl
-	ld	(_pipeOverwrite), hl
-BB2_15:
+	jp	m, BB2_24
+	ld	(_checkPipe), bc
+BB2_24:
 	ld	e, -64
-	ld	bc, 80
-	ld	iy, 0
-BB2_16:
+	ld	a, 1
+	ld	hl, 32
+	push	bc
+	pop	iy
+	push	hl
+	pop	bc
+BB2_25:
 	lea	hl, iy
 	or	a, a
 	sbc	hl, bc
-	ld	hl, (ix - 3)
-	jr	z, BB2_18
+	jr	z, BB2_27
 	lea	bc, iy
-	ld	(ix - 6), iy
-	ld	iy, _pipes
+	ld	(ix - 3), iy
+	ld	iy, _pipeRims
 	add	iy, bc
 	ld	bc, (iy)
 	lea	hl, iy + 3
+	ld	d, a
 	ld	a, (hl)
 	or	a, a
 	sbc	hl, hl
 	call	__fadd
 	ld	(iy), bc
-	ld	hl, 8
-	push	hl
-	pop	bc
 	ld	(iy + 3), a
-	ld	iy, (ix - 6)
+	ld	iy, (ix - 3)
+	ld	a, d
+	ld	bc, 8
 	add	iy, bc
-	ld	bc, 80
-	jr	BB2_16
-BB2_18:
-	ld	a, l
-	or	a, a
-	jr	z, BB2_20
-	ld	a, 0
-	jr	BB2_21
-BB2_20:
-	ld	a, -1
-BB2_21:
+	ld	bc, 32
+	jr	BB2_25
+BB2_27:
 	ld	sp, ix
 	pop	ix
 	ret
@@ -286,68 +360,195 @@ BB2_21:
 	section	.text,"ax",@progbits
 	public	_draw
 _draw:
-	ld	hl, -6
+	ld	hl, -18
 	call	__frameset
-	ld	hl, _pipes+8
-	ld	(ix - 3), hl
 	ld	hl, 1
 	push	hl
 	call	_gfx_FillScreen
 	pop	hl
-	ld	de, 10
-	or	a, a
-	sbc	hl, hl
-	ld	(ix - 6), hl
+	ld	bc, 4
+	ld	de, 0
 BB3_1:
-	ld	hl, (ix - 6)
+	push	de
+	pop	hl
 	or	a, a
-	sbc	hl, de
-	jr	nc, BB3_3
-	ld	iy, (ix - 3)
-	ld	bc, (iy - 8)
-	ld	a, (iy - 5)
+	sbc	hl, bc
+	jp	z, BB3_9
+	ld	(ix - 12), de
+	ex	de, hl
+	ld	c, 3
+	call	__ishl
+	push	hl
+	pop	de
+	ld	hl, _pipeRims
+	push	hl
+	pop	iy
+	add	iy, de
+	ld	(ix - 6), iy
+	lea	hl, iy + 4
+	ld	bc, (iy + 4)
+	ld	(ix - 9), bc
+	push	hl
+	pop	iy
+	lea	hl, iy + 3
+	ld	d, (hl)
+	ld	a, d
+	ld	hl, 4194304
+	ld	e, -62
+	call	__fadd
+	ld	hl, 2097152
+	dec	e
+	call	__fadd
+	call	__ftol
+	ld	(ix - 3), bc
+	ld	iy, (ix - 6)
+	ld	bc, (iy)
+	lea	hl, iy + 3
+	ld	a, (hl)
 	call	__ftol
 	push	bc
 	pop	hl
-	ld	(ix - 3), iy
-	ld	bc, (iy - 4)
-	ld	a, (iy - 1)
+	ld	bc, (ix - 9)
+	ld	a, d
 	call	__ftol
 	push	bc
 	push	hl
-	ld	hl, _bottomPipe_data
+	ld	hl, _pipeRim_data
 	push	hl
-	call	_gfx_TransparentSprite
+	call	_gfx_Sprite
 	pop	hl
 	pop	hl
 	pop	hl
-	ld	iy, (ix - 3)
+	ld	iy, (ix - 6)
 	ld	bc, (iy)
 	ld	a, (iy + 3)
 	call	__ftol
+	ld	hl, (ix - 3)
+	push	hl
 	push	bc
+	ld	hl, _pipeRim_data
+	push	hl
+	call	_gfx_Sprite
 	pop	hl
+	pop	hl
+	pop	hl
+	ld	iy, (ix - 6)
 	ld	bc, (iy + 4)
 	ld	a, (iy + 7)
+	ld	hl, 2097152
+	ld	e, 65
+	call	__fadd
+	push	bc
+	pop	hl
+	ld	e, a
+	ld	bc, 4980736
+	ld	a, 67
+	call	__fsub
+	call	__ftol
+	ld	(_bottomPipeSects), bc
+	ld	hl, 240
+	ld	de, (ix - 3)
+	or	a, a
+	sbc	hl, de
+	ld	(_topPipeSects), hl
+	ld	de, 0
+	push	de
+	pop	iy
+BB3_3:
+	lea	hl, iy
+	or	a, a
+	sbc	hl, bc
+	call	pe, __setflag
+	jp	p, BB3_5
+	ld	(ix - 9), iy
+	ld	iy, (ix - 6)
+	ld	bc, (iy)
+	ld	a, (iy + 3)
+	ld	hl, -8388608
+	ld	e, 63
+	call	__fadd
+	call	__ftol
+	ld	(ix - 15), bc
+	ld	hl, (iy + 4)
+	ld	(ix - 18), hl
+	ld	d, (iy + 7)
+	ld	hl, (ix - 9)
+	ld	iy, (ix - 9)
+	add	iy, iy
+	sbc	hl, hl
+	ld	bc, (ix - 9)
+	ld	a, l
+	call	__ltof
+	push	bc
+	pop	hl
+	ld	e, a
+	ld	bc, (ix - 18)
+	ld	a, d
+	call	__fadd
+	ld	hl, 2097152
+	ld	e, 65
+	call	__fadd
 	call	__ftol
 	push	bc
+	ld	hl, (ix - 15)
 	push	hl
-	ld	hl, _topPipe_data
+	ld	hl, _pipeSect_data
 	push	hl
-	call	_gfx_TransparentSprite
+	call	_gfx_Sprite
+	ld	iy, (ix - 9)
+	ld	de, 0
 	pop	hl
 	pop	hl
 	pop	hl
-	ld	de, 2
-	ld	hl, (ix - 6)
+	ld	bc, 20
+	add	iy, bc
+	ld	bc, (_bottomPipeSects)
+	jp	BB3_3
+BB3_5:
+	ld	bc, -20
+	ld	hl, (ix - 3)
+	add	hl, bc
+	ld	(ix - 3), hl
+	push	de
+	pop	iy
+BB3_6:
+	ld	de, (_topPipeSects)
+	lea	hl, iy
+	or	a, a
+	sbc	hl, de
+	call	pe, __setflag
+	jp	p, BB3_8
+	ld	(ix - 9), iy
+	ld	iy, (ix - 6)
+	ld	bc, (iy)
+	ld	a, (iy + 3)
+	ld	hl, -8388608
+	ld	e, 63
+	call	__fadd
+	call	__ftol
+	ld	hl, (ix - 3)
+	push	hl
+	push	bc
+	ld	hl, _pipeSect_data
+	push	hl
+	call	_gfx_Sprite
+	ld	iy, (ix - 9)
+	pop	hl
+	pop	hl
+	pop	hl
+	ld	de, 20
+	add	iy, de
+	ld	de, -20
+	ld	hl, (ix - 3)
 	add	hl, de
-	ld	(ix - 6), hl
-	ld	de, 10
-	ld	iy, (ix - 3)
-	lea	iy, iy + 16
-	ld	(ix - 3), iy
-	jr	BB3_1
-BB3_3:
+	ld	(ix - 3), hl
+	jr	BB3_6
+BB3_8:
+	ld	de, (ix - 12)
+	inc	de
+	ld	bc, 4
+	jp	BB3_1
+BB3_9:
 	ld	hl, 2
 	push	hl
 	call	_gfx_SetColor
@@ -367,12 +568,12 @@ BB3_3:
 	pop	hl
 	pop	hl
 	pop	hl
-BB3_4:
+BB3_10:
 	ld	de, 320
 	lea	hl, iy
 	or	a, a
 	sbc	hl, de
-	jr	z, BB3_6
+	jr	z, BB3_12
 	ld	hl, -52
 	push	hl
 	push	iy
@@ -386,8 +587,8 @@ BB3_4:
 	pop	hl
 	ld	de, 8
 	add	iy, de
-	jr	BB3_4
-BB3_6:
+	jr	BB3_10
+BB3_12:
 	ld	a, (_bird_Y)
 	ld	l, a
 	push	hl
@@ -402,77 +603,94 @@ BB3_6:
 	section	.text,"ax",@progbits
 
 	section	.text,"ax",@progbits
+	public	_fail_Screen
+_fail_Screen:
+	ld	hl, -13
+	call	__frameset
+	ld	hl, ___const.fail_Screen.str
+	ld	bc, 10
+	lea	de, ix - 10
+	ld	(ix - 13), de
+	ldir
+BB4_1:
+	call	_kb_Scan
+	ld	hl, -720868
+	push	de
+	ld	e, (hl)
+	inc	hl
+	ld	d, (hl)
+	ld	l, e
+	ld	h, d
+	pop	de
+	ld	a, l
+	bit	6, a
+	jr	nz, BB4_3
+	ld	hl, 1
+	push	hl
+	call	_gfx_FillScreen
+	pop	hl
+	ld	hl, 115
+	push	hl
+	ld	hl, 110
+	push	hl
+	call	_gfx_SetTextXY
+	pop	hl
+	pop	hl
+	ld	hl, 2
+	push	hl
+	push	hl
+	call	_gfx_SetTextScale
+	pop	hl
+	pop	hl
+	ld	hl, 3
+	push	hl
+	call	_gfx_SetTextFGColor
+	pop	hl
+	ld	hl, (ix - 13)
+	push	hl
+	call	_gfx_PrintString
+	pop	hl
+	ld	hl, (_score)
+	ld	de, 1
+	push	de
+	push	hl
+	call	_gfx_PrintUInt
+	pop	hl
+	pop	hl
+	call	_gfx_SwapDraw
+	jr	BB4_1
+BB4_3:
+	ld	sp, ix
+	pop	ix
+	ret
+	section	.text,"ax",@progbits
+
+	section	.text,"ax",@progbits
 	public	_set_Pipes
 _set_Pipes:
-	ld	hl, -10
-	call	__frameset
-	pea	ix - 4
-	call	_time
-	pop	de
-	push	hl
-	call	_srand
-	pop	hl
-	call	_rand
+	call	_random
 	ld	bc, 117
-	call	__irems
+	call	__iremu
 	ld	de, 68
 	add	hl, de
+	xor	a, a
 	push	hl
 	pop	bc
-	push	bc
-	pop	iy
-	add	iy, iy
-	sbc	hl, hl
-	ld	a, l
-	call	__ltof
+	call	__ultof
 	push	bc
 	pop	de
 	ld	hl, (_pipeOverwrite)
-	ld	(ix - 10), hl
 	ld	c, 3
 	call	__ishl
 	push	hl
 	pop	bc
-	ld	hl, _pipes
-	push	hl
-	pop	iy
-	add	iy, bc
-	ld	(ix - 7), iy
-	ld	(iy + 4), de
-	ld	(iy + 7), a
-	push	de
-	pop	bc
-	ld	hl, 4194304
-	ld	e, -62
-	call	__fadd
-	ld	hl, 3932160
-	inc	e
-	call	__fadd
-	push	bc
-	pop	de
-	ld	hl, (ix - 10)
-	inc	hl
-	ld	c, 3
-	call	__ishl
-	push	hl
-	pop	bc
-	ld	iy, _pipes
+	ld	iy, _pipeRims
 	add	iy, bc
 	ld	(iy + 4), de
 	ld	(iy + 7), a
-	lea	bc, iy
 	ld	hl, -6291456
-	ex	de, hl
-	ld	hl, (ix - 7)
-	ld	(hl), de
-	ld	iy, (ix - 7)
+	ld	(iy), hl
 	ld	(iy + 3), 67
-	push	bc
-	pop	iy
-	ld	(iy), de
-	ld	(iy + 3), 67
-	ld	sp, ix
-	pop	ix
 	ret
 	section	.text,"ax",@progbits
 
@@ -481,26 +699,9 @@ _set_Pipes:
 _bird_Y:
 	dl	120
 
-	section	.bss,"aw",@nobits
-	public	_clipped
-_clipped:
-	rb	1
-
 	section	.data,"aw",@progbits
-	public	_pipes
-_pipes:
-	dd	0xc2480000
-	dd	0x00000000
-	dd	0xc2480000
-	dd	0x00000000
-	dd	0xc2480000
-	dd	0x00000000
-	dd	0xc2480000
-	dd	0x00000000
-	dd	0xc2480000
-	dd	0x00000000
-	dd	0xc2480000
-	dd	0x00000000
+	public	_pipeRims
+_pipeRims:
 	dd	0xc2480000
 	dd	0x00000000
 	dd	0xc2480000
@@ -513,6 +714,11 @@ _pipes:
 	section	.bss,"aw",@nobits
 	public	_pipeOverwrite
 _pipeOverwrite:
+	rb	3
+
+	section	.bss,"aw",@nobits
+	public	_checkPipe
+_checkPipe:
 	rb	3
 
 	section	.data,"aw",@progbits
@@ -530,15 +736,30 @@ _step.prevEnter:
 _velY:
 	rb	4
 
-	section	.data,"aw",@progbits
-	public	_bottomPipe_data
-_bottomPipe_data:
-	db	26, "¼																																", 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "", 0
+	section	.bss,"aw",@nobits
+	public	_score
+_score:
+	rb	3
 
 	section	.data,"aw",@progbits
-	public	_topPipe_data
-_topPipe_data:
-	db	26, "¼", 0, "", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, 0, "				", 0, "																																"
+	public	_pipeRim_data
+_pipeRim_data:
+	db	26, 10, "																																"
+
+	section	.bss,"aw",@nobits
+	public	_bottomPipeSects
+_bottomPipeSects:
+	rb	3
+
+	section	.bss,"aw",@nobits
+	public	_topPipeSects
+_topPipeSects:
+	rb	3
+
+	section	.data,"aw",@progbits
+	public	_pipeSect_data
+_pipeSect_data:
+	db	"																																																																																"
 
 	section	.data,"aw",@progbits
 	public	_grass_data
@@ -550,37 +771,50 @@ _grass_data:
 _FlappyBird_data:
 	db	"", 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 13, "", 0, 0, 0, 0, 0, 0, 0, "", 13, 13, 13, "", 0, 0, 0, 0, "", 13, 13, "", 13, "", 0, 0, "", 13, 13, 13, 13, "", 13, 13, "", 13, "", 0, 0, "", 13, 13, 13, 13, 13, "", 13, 13, 13, "", 0, 0, "", 13, 13, 13, "", 0, 0, "", 10, 10, 10, 10, "", 0, 0, "", 10, "", 0, 0, 0, "", 10, 10, 10, "", 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0
 
+	section	.rodata,"a",@progbits
+	private	___const.fail_Screen.str
+___const.fail_Screen.str:
+	db	"Score: ", 0, 0, 0
+
+	section	.bss,"aw",@nobits
+	public	_sect_X
+_sect_X:
+	rb	3
+
 	ident	"clang version 15.0.0 (https://github.com/jacobly0/llvm-project 5f8512f22751066573aa48ac848a6d2195838ac3)"
 	ident	"clang version 15.0.0 (https://github.com/jacobly0/llvm-project 5f8512f22751066573aa48ac848a6d2195838ac3)"
 	ident	"clang version 15.0.0 (https://github.com/jacobly0/llvm-project 5f8512f22751066573aa48ac848a6d2195838ac3)"
 	ident	"clang version 15.0.0 (https://github.com/jacobly0/llvm-project 5f8512f22751066573aa48ac848a6d2195838ac3)"
 	ident	"clang version 15.0.0 (https://github.com/jacobly0/llvm-project 5f8512f22751066573aa48ac848a6d2195838ac3)"
 	ident	"clang version 15.0.0 (https://github.com/jacobly0/llvm-project 5f8512f22751066573aa48ac848a6d2195838ac3)"
+	extern	_random
 	extern	__Unwind_SjLj_Register
 	extern	__frameset
 	extern	_srand
-	extern	_gfx_SetTransparentColor
+	extern	_gfx_SetTextFGColor
 	extern	_gfx_FillRectangle_NoClip
 	extern	_gfx_Begin
 	extern	__fadd
 	extern	_kb_Scan
 	extern	_gfx_SetPalette
-	extern	_rand
-	extern	__sand
+	extern	__ultof
 	extern	_gfx_SwapDraw
 	extern	__ishl
+	extern	_gfx_PrintString
 	extern	__ftol
 	extern	_gfx_SetDraw
 	extern	__setflag
 	extern	_gfx_FillScreen
 	extern	__Unwind_SjLj_Unregister
-	extern	__irems
+	extern	__iremu
+	extern	_gfx_PrintUInt
 	extern	_gfx_SetColor
+	extern	_gfx_Sprite
 	extern	__ltof
 	extern	_gfx_TransparentSprite_NoClip
 	extern	_gfx_End
 	extern	_gfx_Sprite_NoClip
 	extern	__fcmp
-	extern	_gfx_TransparentSprite
+	extern	_gfx_SetTextXY
 	extern	__fsub
-	extern	_time
+	extern	_gfx_SetTextScale

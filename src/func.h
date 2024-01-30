@@ -6,7 +6,7 @@
 typedef struct{
     float x;
     float y;
-} Pipe;
+} Position;
 
 typedef struct{
     int x;
@@ -23,8 +23,11 @@ typedef struct{
 #define SAND_HEIGHT 32
 #define PIPE_BUFFER 216
 #define PIPE_GAP 48
+#define Pipe_width 26
+#define Pipe_height 188
 
 bool step();
 void draw();
 void init_Pipes();
 void set_Pipes();
+void fail_Screen();

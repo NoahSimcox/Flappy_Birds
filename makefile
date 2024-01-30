@@ -2,9 +2,9 @@
 # Makefile Options
 # ----------------------------
 
-NAME = DEMO
+NAME = Flappy
 ICON = icon.png
-DESCRIPTION = "CE C Toolchain Demo"
+DESCRIPTION = "Flappy Bird for the CE"
 COMPRESSED = NO
 
 CFLAGS = -Wall -Wextra -Oz
